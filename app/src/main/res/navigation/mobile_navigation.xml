@@ -2,22 +2,34 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_home">
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
     <fragment
         android:id="@+id/navigation_home"
-        android:label="title_home"
-        android:name="com.oricadu.financemanager.fragments.HomeFragment"
-        tools:layout="@layout/home_fragment" />
+        android:name="com.oricadu.financemanager.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:label="title_dashboard"
-        android:name="com.oricadu.financemanager.fragments.DashboardFragment"
-        tools:layout="@layout/dashboard_fragment" />
+        android:id="@+id/navigation_category"
+        android:name="com.oricadu.financemanager.ui.categories.CategoriesFragment"
+        android:label="@string/title_categories"
+        tools:layout="@layout/fragment_categories" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:label="title_notifications"
-        android:name="com.oricadu.financemanager.fragments.NotificationsFragment"
-        tools:layout="@layout/notifications_fragment" />
+        android:id="@+id/navigation_profile"
+        android:name="com.oricadu.financemanager.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_auth"
+            app:destination="@id/navigation_auth" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_auth"
+        android:name="com.oricadu.financemanager.ui.auth.AuthFragment"
+        android:label="@string/title_auth"
+        tools:layout="@layout/auth_fragment" />
 </navigation>

@@ -4,23 +4,14 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home"
-        android:title="Home" />
-
+        android:title="@string/title_home" />
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_category"
         android:icon="@drawable/ic_category"
-        android:title="Categories" />
-
+        android:title="@string/title_categories" />
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_person"
-        android:title="Profile" />
-
-    <!--<item
-        android:id="@+id/home"
-        android:icon="@drawable/ic_home"
-        android:title="Home" />-->
-
-
+        android:title="@string/title_profile" />
 
 </menu>

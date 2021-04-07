@@ -27,9 +27,6 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.oricadu.financemanager.fragments.DashboardFragment;
-import com.oricadu.financemanager.fragments.HomeFragment;
-import com.oricadu.financemanager.fragments.NotificationsFragment;
 
 import java.util.List;
 
