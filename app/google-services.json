@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "636306299760",
+    "project_id": "finance-manager-33980",
+    "storage_bucket": "finance-manager-33980.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636306299760:android:ab41700eb0634eeaaecdb5",
+        "android_client_info": {
+          "package_name": "com.oricadu.financemanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "636306299760-9rfuik44odbtfaulrg07fqptqnnqn4n3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_vpK2bQPsgUyzfMYGSO6CmUwtIUlXUT0"
+
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "636306299760-9rfuik44odbtfaulrg07fqptqnnqn4n3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
