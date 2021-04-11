@@ -5,4 +5,9 @@
     <string name="title_categories">Categories</string>
     <string name="title_profile">Profile</string>
     <string name="title_auth">auth</string>
+    <string name="category_name">Category Name</string>
+    <string name="sum">Sum</string>
+    <string name="expense_name">Expense name</string>
+    <string name="checks">Checks</string>
+    <string name="expenses">Expenses</string>
 </resources>

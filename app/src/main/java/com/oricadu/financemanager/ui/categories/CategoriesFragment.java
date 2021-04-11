@@ -45,7 +45,7 @@ public class CategoriesFragment extends Fragment {
             super(itemView);
 
             categoryName = itemView.findViewById(R.id.category_name);
-            categorySum = itemView.findViewById(R.id.category_sum);
+            categorySum = itemView.findViewById(R.id.expense_sum);
             categorySpentSum = itemView.findViewById(R.id.category_spent_sum);
         }
     }
@@ -74,7 +74,7 @@ public class CategoriesFragment extends Fragment {
         }
 
         inputName = root.findViewById(R.id.category_name);
-        inputSum = root.findViewById(R.id.category_sum);
+        inputSum = root.findViewById(R.id.expense_sum);
         button = root.findViewById(R.id.action_button2);
 
 

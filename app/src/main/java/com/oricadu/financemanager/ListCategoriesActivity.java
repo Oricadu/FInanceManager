@@ -1,7 +1,6 @@
 package com.oricadu.financemanager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,15 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.oricadu.financemanager.model.Category;
@@ -43,7 +39,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
             super(itemView);
 
             categoryName = itemView.findViewById(R.id.category_name);
-            categorySum = itemView.findViewById(R.id.category_sum);
+            categorySum = itemView.findViewById(R.id.expense_sum);
             categorySpentSum = itemView.findViewById(R.id.category_spent_sum);
         }
     }
@@ -59,7 +55,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
         Log.i("User", "user.uid=" + user.getUid());
 
         inputName = findViewById(R.id.category_name);
-        inputSum = findViewById(R.id.category_sum);
+        inputSum = findViewById(R.id.expense_sum);
         button = findViewById(R.id.action_button2);
 
         recyclerView = (RecyclerView) findViewById(R.id.category_recycler);

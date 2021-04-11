@@ -21,7 +21,7 @@
             android:textColorHint="@color/authui_colorAccent" />
 
         <EditText
-            android:id="@+id/category_sum"
+            android:id="@+id/expense_sum"
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
