@@ -19,17 +19,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,13 +35,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.oricadu.financemanager.R;
 import com.oricadu.financemanager.model.Aim;
-import com.oricadu.financemanager.model.Category;
-import com.oricadu.financemanager.ui.MyDialogFragment;
-import com.oricadu.financemanager.ui.categories.CategoriesFragment;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AimsFragment extends Fragment {
 
@@ -65,7 +55,7 @@ public class AimsFragment extends Fragment {
 
     public static class AimAddDialog extends DialogFragment {
 
-        EditText inputName, inputSum;
+        EditText inputName, inputSum, inputPercent;
 
         @NonNull
         @Override
@@ -73,36 +63,49 @@ public class AimsFragment extends Fragment {
             LayoutInflater inflater = getActivity().getLayoutInflater();
             final View dialogView = inflater.inflate(R.layout.dialog_fragment, null);
             ViewGroup linearLayoutDialog = dialogView.findViewById(R.id.linear_layout_dialog);
-            inputName = (EditText) dialogView.findViewById(R.id.aim_name);
-            inputSum = (EditText) dialogView.findViewById(R.id.aim_sum);
+
+            for (int i = 0; i < linearLayoutDialog.getChildCount(); i++) {
+                View child = linearLayoutDialog.getChildAt(i);
+                child.setVisibility(View.GONE);
+            }
+
+            inputName = (EditText) dialogView.findViewById(R.id.input_name);
+            inputSum = (EditText) dialogView.findViewById(R.id.input_sum);
+            inputPercent = (EditText) dialogView.findViewById(R.id.aim_percent);
+
+            inputName.setVisibility(View.VISIBLE);
+            inputName.setHint(R.string.aim_name);
+            inputSum.setVisibility(View.VISIBLE);
+            inputPercent.setVisibility(View.VISIBLE);
+            inputPercent.setHint(R.string.allocation_percent);
 
 
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                     .setTitle("Add new aim")
-                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             onDismiss(dialog);
                         }
                     })
-                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String aimName = inputName.getText().toString().trim();
-                            int aimSum = Integer.parseInt(inputSum.getText().toString().trim());
-                            reference.child(user.getUid())
-                                    .child("Aims")
-                                    .child(aimName)
-                                    .setValue(new Aim(aimName,
-                                            aimSum,
-                                            0, 0));
+
+                            String name = inputName.getText().toString().trim();
+                            String sum = inputSum.getText().toString().trim();
+                            String percent = inputPercent.getText().toString().trim();
+
+                            if (name.length() != 0 && sum.length() != 0) {
+                                addAim(name, Integer.parseInt(sum), Integer.parseInt(percent
+                                ));
+
+                            } else {
+                                Toast.makeText(getActivity(), R.string.error_fill, Toast.LENGTH_LONG).show();
+                            }
                         }
                     });
             dialogBuilder.setView(dialogView);
-//                                    .setNeutralButton(R.string.maybe, this)
-                    /*.setMessage("message_text")*/;
-
-
 
             return dialogBuilder.create();
 
@@ -119,8 +122,8 @@ public class AimsFragment extends Fragment {
         public AimViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            aimName = itemView.findViewById(R.id.aim_name);
-            aimSum = itemView.findViewById(R.id.aim_sum);
+            aimName = itemView.findViewById(R.id.input_name);
+            aimSum = itemView.findViewById(R.id.input_sum);
             aimAccumulatedSum = itemView.findViewById(R.id.aim_accumulated_sum);
             aimPercent = itemView.findViewById(R.id.aim_percent);
             aimAllocatePercent = itemView.findViewById(R.id.aim_allocate_percent);
@@ -200,7 +203,7 @@ public class AimsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     AimAddDialog dialog = new AimAddDialog();
-                    dialog.show(getChildFragmentManager(), "tag");
+                    dialog.show(getChildFragmentManager(), "aim");
                 }
             });
 
@@ -262,6 +265,18 @@ public class AimsFragment extends Fragment {
 
 
         return root;
+    }
+
+    private static void addAim(String name, int sum, int percent) {
+        String aimName = name;
+        int aimSum = sum;
+        int aimPercent = percent;
+        reference.child(user.getUid())
+                .child("Aims")
+                .child(aimName)
+                .setValue(new Aim(aimName,
+                        aimSum,
+                        0, aimPercent));
     }
 
 }

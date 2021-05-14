@@ -16,13 +16,13 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/aim_name"
+            android:id="@+id/input_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
         <TextView
-            android:id="@+id/aim_sum"
+            android:id="@+id/input_sum"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>

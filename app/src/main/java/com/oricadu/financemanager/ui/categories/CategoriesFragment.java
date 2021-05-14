@@ -1,5 +1,7 @@
 package com.oricadu.financemanager.ui.categories;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,8 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -22,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.oricadu.financemanager.R;
+import com.oricadu.financemanager.model.Aim;
 import com.oricadu.financemanager.model.Category;
 
 import java.util.List;
@@ -30,14 +37,70 @@ public class CategoriesFragment extends Fragment {
 
     private CategoriesViewModel categoriesViewModel;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference reference;
-    private FirebaseUser user;
-    private FirebaseAuth auth;
+    private static FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private static DatabaseReference reference = database.getReference();
+    private static FirebaseAuth auth = FirebaseAuth.getInstance();
+    private static FirebaseUser user = auth.getCurrentUser();
 
     private RecyclerView recyclerView;
     private FloatingActionButton button;
     private EditText inputName, inputSum;
+
+    public static class CategoryAddDialog extends DialogFragment {
+
+        EditText inputName, inputSum;
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            final View dialogView = inflater.inflate(R.layout.dialog_fragment, null);
+            ViewGroup linearLayoutDialog = dialogView.findViewById(R.id.linear_layout_dialog);
+
+            for (int i = 0; i < linearLayoutDialog.getChildCount(); i++) {
+                View child = linearLayoutDialog.getChildAt(i);
+                child.setVisibility(View.GONE);
+            }
+
+            inputName = (EditText) dialogView.findViewById(R.id.input_name);
+            inputSum = (EditText) dialogView.findViewById(R.id.input_sum);
+
+            inputName.setVisibility(View.VISIBLE);
+            inputName.setHint(R.string.category_name);
+            inputSum.setVisibility(View.VISIBLE);
+
+
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
+                    .setTitle("Add new category")
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            onDismiss(dialog);
+                        }
+                    })
+                    .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            String name = inputName.getText().toString().trim();
+                            String sum = inputSum.getText().toString().trim();
+
+                            if (name.length() != 0 && sum.length() != 0) {
+                                addCategory(name, Integer.parseInt(sum));
+
+                            } else {
+                                Toast.makeText(getActivity(), R.string.error_fill, Toast.LENGTH_LONG).show();
+                            }
+
+                        }
+                    });
+            dialogBuilder.setView(dialogView);
+
+            return dialogBuilder.create();
+
+        }
+    }
 
     protected static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
@@ -122,14 +185,8 @@ public class CategoriesFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String categoryName = inputName.getText().toString().trim();
-                    int categorySum = Integer.parseInt(inputSum.getText().toString().trim());
-                    reference.child(user.getUid())
-                            .child("Categories")
-                            .child(categoryName)
-                            .setValue(new Category(categoryName,
-                                    categorySum,
-                                    0, categorySum));
+                    CategoryAddDialog dialog = new CategoryAddDialog();
+                    dialog.show(getChildFragmentManager(), "category");
 
                 }
             });
@@ -159,6 +216,17 @@ public class CategoriesFragment extends Fragment {
 
 
         return root;
+    }
+
+    private static void addCategory(String name, int sum) {
+        String categoryName = name;
+        int categorySum = sum;
+        reference.child(user.getUid())
+                .child("Categories")
+                .child(categoryName)
+                .setValue(new Category(categoryName,
+                        categorySum,
+                        0, categorySum));
     }
 
 

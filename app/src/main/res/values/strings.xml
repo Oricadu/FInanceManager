@@ -20,4 +20,8 @@
     <string name="no">no</string>
     <string name="maybe">maybe</string>
     <string name="allocate">allocate</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="allocation_percent">Allocation percent</string>
+    <string name="error_fill">fill in all the fields</string>
 </resources>

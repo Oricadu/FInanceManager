@@ -12,8 +12,13 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <EditText
-            android:id="@+id/aim_name"
+            android:id="@+id/input_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -22,11 +27,20 @@
             android:maxLength="10"/>
 
         <EditText
-            android:id="@+id/aim_sum"
+            android:id="@+id/input_sum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:hint="@string/sum"
+            android:textColorHint="@color/authui_colorAccent"
+            android:maxLength="7"/>
+
+        <EditText
+            android:id="@+id/aim_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="@string/allocation_percent"
             android:textColorHint="@color/authui_colorAccent"
             android:maxLength="7"/>
 
