@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+            android:id="@+id/navigation_aims"
+            android:name="com.oricadu.financemanager.ui.aims.AimsFragment"
+            android:label="@string/title_aims"
+            tools:layout="@layout/fragment_aims" />
+
+    <fragment
         android:id="@+id/navigation_category"
         android:name="com.oricadu.financemanager.ui.categories.CategoriesFragment"
         android:label="@string/title_categories"
@@ -37,5 +43,11 @@
         android:name="com.oricadu.financemanager.ui.auth.AuthFragment"
         android:label="@string/title_auth"
         tools:layout="@layout/auth_fragment" />
+
+    <fragment
+        android:id="@+id/navigation_scan"
+        android:name="com.oricadu.financemanager.ui.scan.ScanFragment"
+        android:label="@string/scan"
+        tools:layout="@layout/fragment_scan"/>
 
 </navigation>

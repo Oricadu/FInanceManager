@@ -5,6 +5,11 @@
         android:id="@+id/navigation_checks"
         android:icon="@drawable/ic_receipt"
         android:title="@string/checks" />
+
+    <item
+        android:id="@+id/navigation_aims"
+        android:icon="@drawable/ic_stars"
+        android:title="@string/aims" />
     <item
         android:id="@+id/navigation_category"
         android:icon="@drawable/ic_category"

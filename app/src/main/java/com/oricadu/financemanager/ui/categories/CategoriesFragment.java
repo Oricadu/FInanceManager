@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,13 +24,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.oricadu.financemanager.R;
 import com.oricadu.financemanager.model.Category;
 
+import java.util.List;
+
 public class CategoriesFragment extends Fragment {
 
     private CategoriesViewModel categoriesViewModel;
 
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference reference;
-    FirebaseUser user;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference reference;
+    private FirebaseUser user;
     private FirebaseAuth auth;
 
     private RecyclerView recyclerView;
@@ -40,6 +43,7 @@ public class CategoriesFragment extends Fragment {
         TextView categoryName;
         TextView categorySum;
         TextView categorySpentSum;
+        TextView categoryDifferenceSum;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -47,6 +51,15 @@ public class CategoriesFragment extends Fragment {
             categoryName = itemView.findViewById(R.id.category_name);
             categorySum = itemView.findViewById(R.id.expense_sum);
             categorySpentSum = itemView.findViewById(R.id.category_spent_sum);
+            categoryDifferenceSum = itemView.findViewById(R.id.category_difference_sum);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+
+                }
+            });
         }
     }
 
@@ -82,9 +95,9 @@ public class CategoriesFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        FirebaseRecyclerAdapter<Category, CategoryViewHolder> adapter;
 
         if (user != null) {
+            final FirebaseRecyclerAdapter<Category, CategoryViewHolder> adapter;
             adapter = new FirebaseRecyclerAdapter<Category, CategoryViewHolder>(
                     Category.class,
                     R.layout.category_item,
@@ -97,8 +110,11 @@ public class CategoriesFragment extends Fragment {
                     categoryViewHolder.categoryName.setText(category.getCategoryName());
                     categoryViewHolder.categorySum.setText(String.valueOf(category.getCategorySum()));
                     categoryViewHolder.categorySpentSum.setText(String.valueOf(category.getCategorySpentSum()));
+                    categoryViewHolder.categoryDifferenceSum.setText(String.valueOf(category.getCategoryDifferenceSum()));
                     Log.i("User", String.valueOf(category.getCategorySpentSum()) + " spent " + category.getCategorySpentSum());
                 }
+
+
             };
 
             recyclerView.setAdapter(adapter);
@@ -106,17 +122,38 @@ public class CategoriesFragment extends Fragment {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String categoryName = inputName.getText().toString().trim();
+                    int categorySum = Integer.parseInt(inputSum.getText().toString().trim());
                     reference.child(user.getUid())
                             .child("Categories")
-                            .child(inputName.getText().toString().trim())
-                            .setValue(new Category(
-                                    inputName.getText().toString().trim(),
-                                    Integer.parseInt(inputSum.getText().toString().trim()),
-                                    0));
+                            .child(categoryName)
+                            .setValue(new Category(categoryName,
+                                    categorySum,
+                                    0, categorySum));
 
                 }
             });
+
+            ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    int position = viewHolder.getAdapterPosition();
+                    DatabaseReference ref = adapter.getRef(position);
+                    ref.removeValue();
+                }
+            };
+
+            new ItemTouchHelper(callback).attachToRecyclerView(recyclerView);
+
+
+
         }
+
 
 
 

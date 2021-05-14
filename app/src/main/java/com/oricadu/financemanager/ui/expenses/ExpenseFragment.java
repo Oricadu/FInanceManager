@@ -1,5 +1,6 @@
 package com.oricadu.financemanager.ui.expenses;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -21,9 +23,12 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,12 +55,12 @@ public class ExpenseFragment extends Fragment {
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
-    protected static class ExpenceViewHolder extends RecyclerView.ViewHolder {
+    protected static class ExpenseViewHolder extends RecyclerView.ViewHolder {
         TextView categoryName;
         TextView expenseName;
         TextView expenseSum;
 
-        public ExpenceViewHolder(@NonNull View itemView) {
+        public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
 
             categoryName = itemView.findViewById(R.id.category_name);
@@ -86,7 +91,7 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        FirebaseRecyclerAdapter<Expense, ExpenseFragment.ExpenceViewHolder> adapter;
+        FirebaseRecyclerAdapter<Expense, ExpenseViewHolder> adapter;
 
         user = auth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
@@ -101,7 +106,7 @@ public class ExpenseFragment extends Fragment {
                     List<String> listCategories = new ArrayList<>();
                     /*GenericTypeIndicator<List<Category>> t = new GenericTypeIndicator<List<Category>>() {};
                     listCategories = snapshot.child("Categories").getValue(t);*/
-                    for (DataSnapshot dataValues : snapshot.child("Categories").getChildren()){
+                    for (DataSnapshot dataValues : snapshot.child("Categories").getChildren()) {
                         Category category = dataValues.getValue(Category.class);
                         String name = category.getCategoryName();
                         listCategories.add(name);
@@ -124,30 +129,108 @@ public class ExpenseFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String categoryName = spinner.getSelectedItem().toString();
-                String expenceName = inputName.getText().toString().trim();
-                int expenceSum = Integer.parseInt(inputSum.getText().toString().trim());
+                final String categoryName = spinner.getSelectedItem().toString();
+                String expenseName = inputName.getText().toString().trim();
+                final int expenseSum = Integer.parseInt(inputSum.getText().toString().trim());
+
+                final Expense expense = new Expense(expenseName, expenseSum, categoryName);
+
+                reference.child(user.getUid())
+                        .child("Expenses")
+                        .push()
+                        .setValue(expense);
+
+
+                Log.i("add", categoryName);
                 reference.child(user.getUid())
                         .child("Categories")
                         .child(categoryName)
-                        .child("Expenses")
-                        .child(expenceName)
-                        .setValue(new Expense(expenceName, expenceSum, categoryName));
+                        .get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.i("add", task.getException() + "");
+                        } else {
+                            Category category = task.getResult().getValue(Category.class);
+                            int spentSum = category.getCategorySpentSum();
+
+                            reference.child(user.getUid()).child("Categories")
+                                    .child(expense.getCategoryName())
+                                    .child("categorySpentSum")
+                                    .setValue(expenseSum + spentSum);
+
+
+
+                        }
+                    }
+                });
+
+                reference.child(user.getUid())
+                        .child("Categories")
+                        .child(categoryName)
+                        .get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if (!task.isSuccessful()) {
+                            Log.i("add", task.getException() + "");
+                        } else {
+                            Category category = task.getResult().getValue(Category.class);
+                            int differenceSum = category.getCategoryDifferenceSum();
+                            differenceSum -= expenseSum;
+
+
+                            reference.child(user.getUid()).child("Categories")
+                                    .child(expense.getCategoryName())
+                                    .child("categoryDifferenceSum")
+                                    .setValue(differenceSum);
+
+                        }
+                    }
+                });
+
+
             }
         });
 
-        adapter = new FirebaseRecyclerAdapter<Expense, ExpenceViewHolder>(
+        reference.child(user.getUid()).child("Expenses").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Log.i("test", "test");
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        adapter = new FirebaseRecyclerAdapter<Expense, ExpenseViewHolder>(
                 Expense.class,
                 R.layout.expence_item,
-                ExpenceViewHolder.class,
+                ExpenseViewHolder.class,
                 reference.child(user.getUid())
-                        .child("Categories").child("Вкусняхи").child("Expenses")) {
+                        .child("Expenses")) {
             @Override
-            protected void populateViewHolder(ExpenceViewHolder expenceViewHolder, Expense expense, int i) {
+            protected void populateViewHolder(ExpenseViewHolder expenseViewHolder, Expense expense, int i) {
                 Log.i("User", "inside adapter user.uid=" + user.getUid());
-                expenceViewHolder.categoryName.setText(expense.getCategoryName());
-                expenceViewHolder.expenseSum.setText(String.valueOf(expense.getExpenseSum()));
-                expenceViewHolder.expenseName.setText(String.valueOf(expense.getExpenseName()));
+                expenseViewHolder.categoryName.setText(expense.getCategoryName());
+                expenseViewHolder.expenseSum.setText(String.valueOf(expense.getExpenseSum()));
+                expenseViewHolder.expenseName.setText(String.valueOf(expense.getExpenseName()));
                 Log.i("User", String.valueOf(expense.getExpenseSum()) + " spent " + expense.getCategoryName());
             }
         };
@@ -155,12 +238,10 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
 
-
         return root;
 
 
     }
-
 
 
 }

@@ -95,7 +95,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
                         .setValue(new Category(
                                 inputName.getText().toString().trim(),
                                 Integer.parseInt(inputSum.getText().toString().trim()),
-                                0));
+                                0, 0));
 
             }
         });
