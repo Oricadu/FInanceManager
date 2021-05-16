@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.Spinner;
@@ -32,6 +33,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -105,7 +107,7 @@ public class ExpenseFragment extends Fragment {
 
                     }
                     ListAdapter adapter = new ArrayAdapter<>(getContext(),
-                            android.R.layout.simple_spinner_item,
+                            R.layout.spinner_item,
                             listCategories);
                     spinner.setAdapter((SpinnerAdapter) adapter);
                 }
@@ -247,9 +249,25 @@ public class ExpenseFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                DatabaseReference ref = adapter.getRef(position);
-                ref.removeValue();
+                final int position = viewHolder.getAdapterPosition();
+                Snackbar snackbar = Snackbar.make(viewHolder.itemView, getResources().getString(R.string.is_sure), Snackbar.LENGTH_LONG)
+                        .setAction("yes", new View.OnClickListener (){
+                            @Override
+                            public void onClick(View v) {
+                                DatabaseReference ref = adapter.getRef(position);
+                                ref.removeValue();
+                            }
+                        });
+                View snack = snackbar.getView();
+                snack.setBackgroundColor(getResources().getColor(R.color.background, getActivity().getTheme()));
+                int snackbarTextId = com.google.android.material.R.id.snackbar_text;
+                int snackbarButtonId = com.google.android.material.R.id.snackbar_action;
+                TextView textView = (TextView) snack.findViewById(snackbarTextId);
+                Button button = (Button) snack.findViewById(snackbarButtonId);
+                textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark, getActivity().getTheme()));
+                button.setBackgroundColor(getResources().getColor(R.color.colorAccent, getActivity().getTheme()));
+                snackbar.show();
+                recyclerView.getAdapter().notifyDataSetChanged();
             }
         };
 

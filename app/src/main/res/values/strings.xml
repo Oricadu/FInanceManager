@@ -28,4 +28,5 @@
     <string name="accumulated_percent">Accumulated percent</string>
     <string name="spent">Spent</string>
     <string name="difference">Difference</string>
+    <string name="is_sure">are you sure?</string>
 </resources>

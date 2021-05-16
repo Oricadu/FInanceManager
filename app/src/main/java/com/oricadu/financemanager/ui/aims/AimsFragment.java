@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +39,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.oricadu.financemanager.R;
 import com.oricadu.financemanager.model.Aim;
+import com.oricadu.financemanager.ui.categories.CategoriesFragment;
 
 import java.text.DecimalFormat;
 
@@ -58,7 +60,25 @@ public class AimsFragment extends Fragment {
 
     public static class AimAddDialog extends DialogFragment {
 
-        EditText inputName, inputSum, inputPercent;
+        EditText inputName, inputSum, inputPercent, inputAccumulated;
+        private String aimName, aimSum, aimPercent, oldName, accumulated;
+
+        private boolean isEdit = false;
+
+        public  AimAddDialog(){
+            super();
+            isEdit = false;
+        }
+
+        public AimAddDialog(String name, String sum, String aimPercent, String accumulated) {
+            this.aimName = name;
+            this.aimSum = sum;
+            this.aimPercent = aimPercent;
+            this.oldName = name;
+            this.accumulated = accumulated;
+            this.isEdit = true;
+
+        }
 
         @NonNull
         @Override
@@ -75,12 +95,23 @@ public class AimsFragment extends Fragment {
             inputName = (EditText) dialogView.findViewById(R.id.input_name);
             inputSum = (EditText) dialogView.findViewById(R.id.input_sum);
             inputPercent = (EditText) dialogView.findViewById(R.id.aim_percent);
+            inputAccumulated = (EditText) dialogView.findViewById(R.id.aim_accumulated_sum);
 
             inputName.setVisibility(View.VISIBLE);
             inputName.setHint(R.string.aim_name);
             inputSum.setVisibility(View.VISIBLE);
             inputPercent.setVisibility(View.VISIBLE);
             inputPercent.setHint(R.string.allocation_percent);
+            inputAccumulated.setVisibility(View.VISIBLE);
+            inputAccumulated.setHint(R.string.accumulated);
+
+            if ((aimName != null) && (aimSum != null) && (aimPercent != null)) {
+                inputName.setText(aimName);
+                inputSum.setText(aimSum);
+                inputPercent.setText(aimPercent);
+                inputAccumulated.setText(accumulated);
+            }
+
 
 
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
@@ -98,10 +129,19 @@ public class AimsFragment extends Fragment {
                             String name = inputName.getText().toString().trim();
                             String sum = inputSum.getText().toString().trim();
                             String percent = inputPercent.getText().toString().trim();
+                            String accumulated = inputAccumulated.getText().toString().trim();
 
                             if (name.length() != 0 && sum.length() != 0) {
-                                addAim(name, Integer.parseInt(sum), Integer.parseInt(percent
-                                ));
+                                if (isEdit) {
+                                    editAim(name, oldName,
+                                            Integer.parseInt(sum),
+                                            Integer.parseInt(percent),
+                                            Integer.parseInt(accumulated));
+                                } else {
+                                    addAim(name, Integer.parseInt(sum), Integer.parseInt(percent));
+
+                                }
+
 
                             } else {
                                 Toast.makeText(getActivity(), R.string.error_fill, Toast.LENGTH_LONG).show();
@@ -192,7 +232,7 @@ public class AimsFragment extends Fragment {
                 protected void populateViewHolder(AimsFragment.AimViewHolder aimsViewHolder, Aim aim, int i) {
 
                     DecimalFormat format = new DecimalFormat("##%");
-                    String percent = format.format((double) aim.getAimAccumulatedSum() / aim.getAimSum());
+                    final String percent = format.format((double) aim.getAimAccumulatedSum() / aim.getAimSum());
                     String allocationPercent = format.format((double) aim.getAimPercent() / 100);
                     Log.i("aim", "inside adapter user.uid=" + user.getUid());
 
@@ -208,6 +248,33 @@ public class AimsFragment extends Fragment {
                         aimsViewHolder.cardView.setCardBackgroundColor(Color.parseColor("#3C6045"));
                     }
 
+                    aimsViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View item) {
+                            CardView cardView = (CardView) item;
+                            TextView name = cardView.findViewById(R.id.input_name);
+                            TextView sum = cardView.findViewById(R.id.input_sum);
+                            TextView percent = cardView.findViewById(R.id.aim_allocate_percent);
+                            TextView accumulated = cardView.findViewById(R.id.aim_accumulated_sum);
+
+                            Log.i("category", "" + item);
+//                            Log.i("category", "position " + position);
+                            Log.i("category", "name " + name.getText());
+
+                            AimAddDialog dialog = new AimAddDialog(name.getText().toString(),
+                                    sum.getText().toString().trim(),
+                                    percent.getText().toString().trim().replace("%", ""),
+                                    accumulated.getText().toString().trim());
+
+                            dialog.show(getChildFragmentManager(), "category");
+
+                            if ((dialog.inputSum != null) && (dialog.inputName != null)) {
+
+                                dialog.inputName.setText(name.getText());
+                                dialog.inputSum.setText(sum.getText());
+                            }
+                        }
+                    });
                 }
 
             };
@@ -270,9 +337,27 @@ public class AimsFragment extends Fragment {
 
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    int position = viewHolder.getAdapterPosition();
-                    DatabaseReference ref = adapter.getRef(position);
-                    ref.removeValue();
+
+                    final int position = viewHolder.getAdapterPosition();
+                    Snackbar snackbar = Snackbar.make(viewHolder.itemView, getResources().getString(R.string.is_sure), Snackbar.LENGTH_LONG)
+                            .setAction("yes", new View.OnClickListener (){
+                                @Override
+                                public void onClick(View v) {
+                                    DatabaseReference ref = adapter.getRef(position);
+                                    ref.removeValue();
+                                }
+                            });
+                    View snack = snackbar.getView();
+                    snack.setBackgroundColor(getResources().getColor(R.color.background, getActivity().getTheme()));
+                    int snackbarTextId = com.google.android.material.R.id.snackbar_text;
+                    int snackbarButtonId = com.google.android.material.R.id.snackbar_action;
+                    TextView textView = (TextView) snack.findViewById(snackbarTextId);
+                    Button button = (Button) snack.findViewById(snackbarButtonId);
+                    textView.setTextColor(getResources().getColor(R.color.colorPrimaryDark, getActivity().getTheme()));
+                    button.setBackgroundColor(getResources().getColor(R.color.colorAccent, getActivity().getTheme()));
+                    snackbar.show();
+                    recyclerView.getAdapter().notifyDataSetChanged();
+
                 }
             };
 
@@ -299,6 +384,20 @@ public class AimsFragment extends Fragment {
                 .setValue(new Aim(aimName,
                         aimSum,
                         0, aimPercent));
+    }
+
+    private static void editAim(String aimName, String oldName, int aimSum, int aimPercent, int accumulatedSum) {
+        reference.child(user.getUid())
+                .child("Aims")
+                .child(oldName)
+                .removeValue();
+
+        reference.child(user.getUid())
+                .child("Aims")
+                .child(aimName)
+                .setValue(new Aim(aimName,
+                        aimSum,
+                        accumulatedSum, aimPercent));
     }
 
 }
