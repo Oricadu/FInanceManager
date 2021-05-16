@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -30,6 +31,8 @@ import com.oricadu.financemanager.R;
 import com.oricadu.financemanager.ui.expenses.ExpenseFragment;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -104,20 +107,29 @@ public class ScanFragment extends Fragment {
             @Override
             public void receiveDetections(@NonNull Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> qrcode = detections.getDetectedItems();
-                System.out.println(qrcode.valueAt(0).displayValue);
-
-                barcodeDetector.release();
+                Log.i("scan", "" + qrcode.valueAt(0).displayValue);
 
 
-                if (qrcode.size() != 0) {
+
+                String regex = "(t=\\d{8}T\\d{6}&s=\\d+\\.\\d{2}&fn=\\d{16}&i=\\d{5}&fp=\\d{10}&n=\\d)";
+                /*Pattern pattern = Pattern.compile();
+                Matcher matcher = pattern.matcher(qrcode.valueAt(0).displayValue);
+*/
+
+
+                Log.i("Scan", "ismatch " + Pattern.matches(regex, qrcode.valueAt(0).displayValue));
+
+
+                if ((qrcode.size() != 0) && (Pattern.matches(regex, qrcode.valueAt(0).displayValue))) {
+                    barcodeDetector.release();
                     ExpenseFragment.addExpense("с чека1", 50, "Еда");
-                    ExpenseFragment.addExpense("с чека1", 520, "Еда");
-                    ExpenseFragment.addExpense("с чека1", 530, "Транспорт");
+                    ExpenseFragment.addExpense("с чека2", 520, "Еда");
+                    ExpenseFragment.addExpense("с чека3", 530, "Транспорт");
 
                     NavController navController = Navigation.findNavController((Activity) root.getContext(), R.id.nav_host_fragment);
                     ExpenseFragment nextFrag= new ExpenseFragment();
-                    navController.navigate(R.id.navigation_expenses);
                     cameraSource.stop();
+                    navController.navigate(R.id.navigation_expenses);
 
                     textView.post(new Runnable() {
                         @Override

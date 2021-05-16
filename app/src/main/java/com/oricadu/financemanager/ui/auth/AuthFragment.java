@@ -64,6 +64,7 @@ public class AuthFragment extends Fragment {
         inputEmail = (EditText) root.findViewById(R.id.email);
         inputPassword = (EditText) root.findViewById(R.id.password);
         inputPhone = (EditText) root.findViewById(R.id.phone);
+        inputPhone.setVisibility(View.GONE);
 //        btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
 
 //        FirebaseUser currentUser = auth.getCurrentUser();
