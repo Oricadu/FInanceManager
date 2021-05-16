@@ -2,11 +2,14 @@ package com.oricadu.financemanager.ui.aims;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -118,9 +121,12 @@ public class AimsFragment extends Fragment {
         TextView aimAccumulatedSum;
         TextView aimPercent;
         TextView aimAllocatePercent;
+        CardView cardView;
 
         public AimViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            cardView = itemView.findViewById(R.id.card_view);
 
             aimName = itemView.findViewById(R.id.input_name);
             aimSum = itemView.findViewById(R.id.input_sum);
@@ -184,15 +190,24 @@ public class AimsFragment extends Fragment {
                             .child("Aims")) {
                 @Override
                 protected void populateViewHolder(AimsFragment.AimViewHolder aimsViewHolder, Aim aim, int i) {
-                    String percent = new DecimalFormat("##.#%").format((double) aim.getAimAccumulatedSum() / aim.getAimSum());
+
+                    DecimalFormat format = new DecimalFormat("##%");
+                    String percent = format.format((double) aim.getAimAccumulatedSum() / aim.getAimSum());
+                    String allocationPercent = format.format((double) aim.getAimPercent() / 100);
                     Log.i("aim", "inside adapter user.uid=" + user.getUid());
 
                     aimsViewHolder.aimName.setText(aim.getAimName());
                     aimsViewHolder.aimSum.setText(String.valueOf(aim.getAimSum()));
                     aimsViewHolder.aimAccumulatedSum.setText(String.valueOf(aim.getAimAccumulatedSum()));
                     aimsViewHolder.aimPercent.setText(percent);
-                    aimsViewHolder.aimAllocatePercent.setText(String.valueOf(aim.getAimPercent()));
+                    aimsViewHolder.aimAllocatePercent.setText(allocationPercent);
                     Log.i("aim", aim.getAimAccumulatedSum() + " sum " + aim.getAimSum());
+
+                    Log.i("aim", "percent " + aim.getAimAccumulatedSum() + "  " +  aim.getAimSum());
+                    if ((aim.getAimAccumulatedSum() != 0) && ((double) aim.getAimAccumulatedSum() / aim.getAimSum() > 1)) {
+                        aimsViewHolder.cardView.setCardBackgroundColor(Color.parseColor("#3C6045"));
+                    }
+
                 }
 
             };
@@ -210,33 +225,40 @@ public class AimsFragment extends Fragment {
             allocate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int sum = Integer.parseInt(allocateSum.getText().toString().trim());
-                    reference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot dataValues : snapshot.child("Aims").getChildren()) {
-                                Aim aim = dataValues.getValue(Aim.class);
-                                double percent = (double) aim.getAimPercent() / 100;
-                                double accumulatedSum = aim.getAimAccumulatedSum();
-                                double newSum = (double) accumulatedSum + sum * percent;
-                                dataValues.getRef().child("aimAccumulatedSum").setValue(newSum);
+                    if (allocateSum.getText().toString().trim().length() != 0) {
+                        final int sum = Integer.parseInt(allocateSum.getText().toString().trim());
+                        reference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot dataValues : snapshot.child("Aims").getChildren()) {
+                                    Aim aim = dataValues.getValue(Aim.class);
+                                    double percent = (double) aim.getAimPercent() / 100;
+                                    double accumulatedSum = aim.getAimAccumulatedSum();
+                                    double newSum = (double) accumulatedSum + sum * percent;
+                                    dataValues.getRef().child("aimAccumulatedSum").setValue(newSum);
 
-                                Log.i("aim", "aim " + aim);
-                                Log.i("aim", "percent " + percent);
-                                Log.i("aim", "oldSum " + accumulatedSum);
-                                Log.i("aim", "newSum " + newSum);
-                                Log.i("aim", "snapshot " + dataValues.getRef().child("aimAccumulatedSum"));
-                                Log.i("aim", "key " + dataValues.getKey());
+                                    Log.i("aim", "aim " + aim);
+                                    Log.i("aim", "percent " + percent);
+                                    Log.i("aim", "oldSum " + accumulatedSum);
+                                    Log.i("aim", "newSum " + newSum);
+                                    Log.i("aim", "snapshot " + dataValues.getRef().child("aimAccumulatedSum"));
+                                    Log.i("aim", "key " + dataValues.getKey());
 
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
                             }
-                        }
+                        });
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                        allocateSum.setText("");
+                    } else {
+                        Toast.makeText(getActivity(), "fill in the firld 'Sum'", Toast.LENGTH_LONG).show();
+                    }
 
-                        }
-                    });
                 }
             });
 

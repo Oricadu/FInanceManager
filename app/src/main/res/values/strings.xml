@@ -24,4 +24,8 @@
     <string name="cancel">Cancel</string>
     <string name="allocation_percent">Allocation percent</string>
     <string name="error_fill">fill in all the fields</string>
+    <string name="accumulated">Accumulated</string>
+    <string name="accumulated_percent">Accumulated percent</string>
+    <string name="spent">Spent</string>
+    <string name="difference">Difference</string>
 </resources>

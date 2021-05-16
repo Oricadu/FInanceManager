@@ -2,8 +2,9 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:layout_width="match_parent"
     app:cardCornerRadius="4dp"
@@ -12,40 +13,140 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        android:padding="10dp"
+        android:gravity="start"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/input_name"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_marginStart="60dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/input_sum"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/aim_allocate_percent"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+                <TextView
+                    android:text="@string/aim_name"
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:typeface="sans"
+                    android:textSize="18sp"
+                    />
 
-        <TextView
-            android:id="@+id/aim_accumulated_sum"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/aim_percent"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+                <TextView
+                    android:id="@+id/input_name"
+                    android:layout_height="match_parent"
+                    android:text="text"
+                    android:layout_marginStart="8dp"
+                    android:typeface="serif"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"/>
 
 
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/sum"
+                    android:layout_height="match_parent"
+                    android:typeface="sans"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/input_sum"
+                    android:layout_height="match_parent"
+                    android:text="text"
+                    android:layout_marginStart="8dp"
+                    android:typeface="serif"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/allocation_percent"
+                    android:layout_width="wrap_content"
+                    android:typeface="sans"
+                    android:textSize="18sp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/aim_allocate_percent"
+                    android:layout_height="match_parent"
+                    android:text="text"
+                    android:typeface="serif"
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/accumulated"
+                    android:layout_height="match_parent"
+                    android:typeface="sans"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/aim_accumulated_sum"
+                    android:layout_height="match_parent"
+                    android:text="text"
+                    android:typeface="serif"
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/accumulated_percent"
+                    android:layout_width="wrap_content"
+                    android:typeface="sans"
+                    android:textSize="18sp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:id="@+id/aim_percent"
+                    android:text="text"
+                    android:typeface="serif"
+                    android:textSize="18sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
 
 
 

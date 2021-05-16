@@ -9,7 +9,11 @@
         android:id="@+id/navigation_checks"
         android:name="com.oricadu.financemanager.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navigation_checks_to_navigation_scan"
+            app:destination="@id/navigation_scan" />
+    </fragment>
 
     <fragment
             android:id="@+id/navigation_aims"

@@ -14,18 +14,14 @@
         app:layout_constraintTop_toTopOf="parent"
         android:gravity="center">
 
-        <!--<Spinner
-            android:id="@+id/aim_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>-->
-
         <EditText
             android:id="@+id/aim_allocate_sum"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:hint="@string/sum"
-            android:textColorHint="@color/authui_colorAccent" />
+            android:textColorHint="@color/colorAccent"
+            android:layout_width="150dp"
+            android:inputType="number"
+            android:hint="@string/sum"/>
 
         <Button
             android:id="@+id/allocate"
@@ -49,6 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
+        app:rippleColor="@color/colorPrimary"
 
 
         android:contentDescription="TODO"

@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,6 +60,8 @@ public class ExpenseFragment extends Fragment {
     private static DatabaseReference reference = database.getReference();
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
     private static FirebaseUser user = auth.getCurrentUser();
+
+    private static FirebaseRecyclerAdapter<Expense, ExpenseViewHolder> adapter;
 
     public static class ExpenseAddDialog extends DialogFragment {
 
@@ -178,7 +181,7 @@ public class ExpenseFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        FirebaseRecyclerAdapter<Expense, ExpenseViewHolder> adapter;
+
 
 
 
@@ -236,13 +239,29 @@ public class ExpenseFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
 
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                DatabaseReference ref = adapter.getRef(position);
+                ref.removeValue();
+            }
+        };
+
+        new ItemTouchHelper(callback).attachToRecyclerView(recyclerView);
+
 
         return root;
 
 
     }
 
-    private static void addExpense(String name, int sum, String spinner) {
+    public static void addExpense(String name, int sum, String spinner) {
         final String categoryName = spinner;
         String expenseName = name;
         final int expenseSum = sum;

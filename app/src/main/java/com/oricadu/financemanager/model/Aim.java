@@ -4,12 +4,12 @@ public class Aim {
     private String aimName;
     private int aimSum;
     private int aimAccumulatedSum;
-    private int aimPercent;
+    private double aimPercent;
 
     public Aim() {
     }
 
-    public Aim(String aimName, int aimSum, int aimAccumulatedSum, int aimPercent) {
+    public Aim(String aimName, int aimSum, int aimAccumulatedSum, double aimPercent) {
         this.aimName = aimName;
         this.aimSum = aimSum;
         this.aimAccumulatedSum = aimAccumulatedSum;
@@ -40,11 +40,11 @@ public class Aim {
         this.aimAccumulatedSum = aimAccumulatedSum;
     }
 
-    public int getAimPercent() {
+    public double getAimPercent() {
         return aimPercent;
     }
 
-    public void setAimPercent(int aimPercent) {
+    public void setAimPercent(double aimPercent) {
         this.aimPercent = aimPercent;
     }
 
